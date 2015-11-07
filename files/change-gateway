@@ -1,0 +1,2 @@
+route del default
+ip route add default via 172.28.128.200

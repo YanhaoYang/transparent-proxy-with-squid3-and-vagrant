@@ -1,7 +1,11 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 Vagrant.configure("2") do |config|
-  config.vm.box      = "ubuntu/trusty64"
+  config.vm.box = "bento/ubuntu-16.04"
+
+  config.vm.provider "parallels" do |prl|
+    prl.memory = 512
+  end
 
   config.vm.provider :virtualbox do |vb|
     vb.gui = false
@@ -11,7 +15,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.define "squid" do |squid|
     squid.vm.hostname = "squid"
-    squid.vm.network :private_network, ip: "172.28.128.200"
+    squid.vm.network :private_network, ip: "172.17.177.2"
 
     squid.vm.provision "file", source: "files/squid.conf", destination: "/tmp/squid.conf"
     squid.vm.provision "file", source: "files/iptables.rules", destination: "/tmp/iptables.rules"
@@ -31,17 +35,19 @@ Vagrant.configure("2") do |config|
       mv /tmp/restore-iptables /etc/network/if-up.d/restore-iptables
       chown root:root /etc/network/if-up.d/restore-iptables
       iptables-restore < /etc/iptables.rules
+      echo 1 > /proc/sys/net/ipv4/ip_forward
     SHELL
   end
 
-  config.vm.define "client" do |client|
-    client.vm.hostname = "client"
-    client.vm.network :private_network, ip: "172.28.128.202"
+  # config.vm.define "client" do |client|
+  #   client.vm.hostname = "client"
+  #   client.vm.network :private_network, ip: "172.28.128.202"
 
-    client.vm.provision "file", source: "files/change-gateway", destination: "/tmp/change-gateway"
-    client.vm.provision "shell", inline: <<-SHELL
-      mv /tmp/change-gateway /usr/local/bin/change-gateway
-      echo "dns-nameservers 8.8.8.8" >> /etc/network/interfaces
-    SHELL
-  end
+  #   client.vm.provision "file", source: "files/change-gateway", destination: "/tmp/change-gateway"
+  #   client.vm.provision "shell", inline: <<-SHELL
+  #     mv /tmp/change-gateway /usr/local/bin/change-gateway
+  #     echo "dns-nameservers 8.8.8.8" >> /etc/network/interfaces
+  #     /usr/local/bin/change-gateway
+  #   SHELL
+  # end
 end

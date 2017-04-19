@@ -1,7 +1,12 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 Vagrant.configure("2") do |config|
-  config.vm.box      = "ubuntu/trusty64"
+  config.vm.box = "bento/ubuntu-16.04"
+
+  config.vm.provider "parallels" do |prl|
+    prl.memory = 512
+    prl.cpus = 1
+  end
 
   config.vm.provider :virtualbox do |vb|
     vb.gui = false
@@ -31,6 +36,7 @@ Vagrant.configure("2") do |config|
       mv /tmp/restore-iptables /etc/network/if-up.d/restore-iptables
       chown root:root /etc/network/if-up.d/restore-iptables
       iptables-restore < /etc/iptables.rules
+      echo 1 > /proc/sys/net/ipv4/ip_forward
     SHELL
   end
 

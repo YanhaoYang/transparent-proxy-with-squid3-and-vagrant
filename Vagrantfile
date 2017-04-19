@@ -48,7 +48,6 @@ Vagrant.configure("2") do |config|
     client.vm.provision "shell", inline: <<-SHELL
       mv /tmp/change-gateway /usr/local/bin/change-gateway
       echo "dns-nameservers 8.8.8.8" >> /etc/network/interfaces
-      /usr/local/bin/change-gateway
     SHELL
   end
 end
